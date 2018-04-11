@@ -1,12 +1,14 @@
 <?php
 
+namespace Ideo\Doctrine\Types\DateTime;
+
 use Doctrine\ORM\Mapping AS ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name = "SAMPLE_BOOLEAN")
+ * @ORM\Table(name = "SAMPLE_DATETIME")
  */
-class BooleanEntity
+class DateTimeEntity
 {
 
     /**
@@ -19,8 +21,8 @@ class BooleanEntity
 
     /**
      *
-     * @var boolean
-     * @ORM\Column(type="boolean")
+     * @var \Carbon\Carbon
+     * @ORM\Column(type="datetime")
      */
     public $data;
 

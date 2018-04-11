@@ -1,12 +1,14 @@
 <?php
 
+namespace Ideo\Doctrine\Types\Json;
+
 use Doctrine\ORM\Mapping AS ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name = "SAMPLE_DATETIME")
+ * @ORM\Table(name = "SAMPLE_JSON")
  */
-class DateTimeEntity
+class JsonEntity
 {
 
     /**
@@ -19,8 +21,8 @@ class DateTimeEntity
 
     /**
      *
-     * @var \Carbon\Carbon
-     * @ORM\Column(type="datetime")
+     * @var array
+     * @ORM\Column(type="json")
      */
     public $data;
 

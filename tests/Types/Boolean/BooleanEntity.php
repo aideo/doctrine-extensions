@@ -1,12 +1,14 @@
 <?php
 
+namespace Ideo\Doctrine\Types\Boolean;
+
 use Doctrine\ORM\Mapping AS ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name = "SAMPLE_JSON")
+ * @ORM\Table(name = "SAMPLE_BOOLEAN")
  */
-class JsonEntity
+class BooleanEntity
 {
 
     /**
@@ -19,8 +21,8 @@ class JsonEntity
 
     /**
      *
-     * @var array
-     * @ORM\Column(type="json")
+     * @var boolean
+     * @ORM\Column(type="boolean")
      */
     public $data;
 

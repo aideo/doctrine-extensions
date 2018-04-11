@@ -1,22 +1,22 @@
 <?php
 
-namespace Ideo\Doctrine\Types;
+namespace Ideo\Doctrine\Subscribers;
 
+use Carbon\Carbon;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\Tools\ToolsException;
-use Ideo\Doctrine\TestCase;
+use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 
-class JsonTest extends TestCase
+class TimestampableSubscriberTest extends TestCase
 {
 
     /**
@@ -36,13 +36,10 @@ class JsonTest extends TestCase
      */
     public function setUp()
     {
-        Type::addType('json', 'Ideo\Doctrine\Types\Json');
-
-        $config = Setup::createAnnotationMetadataConfiguration([__DIR__ . '/Json'], false, null, new ArrayCache(), false);
+        $config = Setup::createAnnotationMetadataConfiguration([__DIR__], false, null, new ArrayCache(), false);
 
         $this->conn = DriverManager::getConnection(['url' => 'sqlite:///:memory:']);
         $this->em = EntityManager::create($this->conn, $config);
-        $this->em->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('json', 'json');
 
         $metadatas = $this->em->getMetadataFactory()->getAllMetadata();
 
@@ -51,15 +48,27 @@ class JsonTest extends TestCase
     }
 
     /**
-     * @throws MappingException
+     * @throws DBALException
+     * @throws ORMException
      */
-    public function testSchema()
+    public function test()
     {
-        $metadata = $this->em->getClassMetadata('Ideo\Doctrine\Types\Json\JsonEntity');
+        $this->em->getEventManager()->addEventSubscriber(new TimestampableSubscriber(new NullLogger()));
 
-        $mapping = $metadata->getFieldMapping("data");
+        $now = Carbon::create(2000, 1, 1, 0, 0, 0);
+        Carbon::setTestNow($now);
 
-        $this->assertEquals($mapping['type'], 'json');
+        $entity = new TestEntity();
+        $entity->id = 1;
+        $entity->name = 'SAMPLE';
+
+        $this->em->persist($entity);
+        $this->em->flush();
+
+        $this->assertNotNull($entity->getCreatedAt());
+        $this->assertEquals($entity->getCreatedAt(), $now);
+        $this->assertNotNull($entity->getUpdatedAt());
+        $this->assertEquals($entity->getUpdatedAt(), $now);
     }
 
 }
